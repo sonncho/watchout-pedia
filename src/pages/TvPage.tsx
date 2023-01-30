@@ -3,6 +3,7 @@ import styled from '@emotion/styled/macro';
 import AiringTodayTvSection from '../features/tv/airingToday'
 import OnTheAirTvSection from '../features/tv/onTheAir';
 import PopularTvSection from '../features/tv/popular';
+import TopRateTvSection from '../features/tv/topRate';
 
 // import LatestTvSection from '../features/tv/latest'
 const Main = styled.main`
@@ -22,6 +23,7 @@ const TvPage = () => {
         <AiringTodayTvSection />
         <OnTheAirTvSection />
         <PopularTvSection />
+        <TopRateTvSection />
       </Container>
     </Main>
   )
