@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from '@emotion/styled/macro';
 import { AiOutlineSearch } from 'react-icons/ai';
+import useMovieSearch from '../../features/movie/useMovieSearch';
 const Base = styled.header`
   position: fixed;
   top: 0;
@@ -22,7 +23,6 @@ const MenuList = styled.ul`
   padding: 0;
   margin: 0;
   display: flex;
-  overflow: hidden;
 `;
 const Menu = styled.li`
   display: flex;
@@ -117,10 +117,50 @@ const SignUp = styled.button`
   margin: 15px 0;
 `;
 
-const Header:React.FC = () => {
-  const handleKeyword = () => {
+const SearchResultWrapper = styled.div`
+  position: absolute;
+  top: 60px;
+  left: 0;
+  z-index: 999;
+  background: #fff;
+  width:100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,.1);
+  max-height: 480px;
+  overflow-y: auto;
+`;
+const SearchResultListItem = styled.li`
+  padding: 4px 6px;
+  box-sizing: border-box;
+  color: #222;
+  font-size: 16px;
+  width: 100%;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+const SearchResultList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+`;
 
+const Header:React.FC = () => {
+  const [searchKeyword, setSearchKeyword] = useState<string>('');
+
+  const pathname = window.location.pathname;
+  const isTv = pathname.indexOf('tv') > -1;
+
+  const handleKeyword = (e: React.ChangeEvent<HTMLInputElement>):void => {
+    setSearchKeyword(e.target.value);
   }
+
+  const { data:searchResult, isLoading, isError } = useMovieSearch(searchKeyword);
+  console.log(searchResult?.data.results);
+
   return (
     <Base>
       <Navigation>
@@ -154,7 +194,20 @@ const Header:React.FC = () => {
                     </SearchLabel>
                   </SearchForm>
                 </SearchFormWrapper>
-              </SearchContainer>
+              </SearchContainer> 
+
+              <SearchResultWrapper>
+                <SearchResultList>
+                  {
+                    searchResult?.data.results.map((item) => (
+                      <Link key={item.id} href={`/movie/${item.id}`}>
+                        <SearchResultListItem>{item.title}</SearchResultListItem>
+                      </Link>
+                    ))
+                  }
+                </SearchResultList>
+              </SearchResultWrapper>
+
             </SearchMenu>
             <Menu>
               <SignIn>로그인</SignIn>
