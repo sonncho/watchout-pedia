@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import styled from '@emotion/styled/macro';
-import { AiOutlineSearch } from 'react-icons/ai';
+import { AiFillCloseCircle, AiOutlineSearch } from 'react-icons/ai';
 import useMovieSearch from '../../features/movie/useMovieSearch';
 const Base = styled.header`
   position: fixed;
@@ -83,7 +83,7 @@ const SearchInput = styled.input`
   font-weight: 400;
   background: transparent;
   width: 100%;
-  padding: 0 0 0 8px;
+  padding: 0 18px 0 6px;
   border: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -130,10 +130,9 @@ const SearchResultWrapper = styled.div`
   overflow-y: auto;
 `;
 const SearchResultListItem = styled.li`
-  padding: 4px 6px;
-  box-sizing: border-box;
+  padding: 4px 12px;
   color: #222;
-  font-size: 16px;
+  font-size: 14px;
   width: 100%;
   height: 24px;
   display: flex;
@@ -141,14 +140,33 @@ const SearchResultListItem = styled.li`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: .3s;
+  &:hover {
+    background-color: #eee;
+  }
 `;
 const SearchResultList = styled.ul`
   list-style: none;
   margin: 0;
   padding: 0;
 `;
-
+const SearchResultCaption = styled.li`
+  padding: 12px 12px 6px 12px;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  color: rgb(255, 5, 88);
+`;
+const ResetIconWrapper = styled.div<{isShow: boolean}>`
+  display: ${({ isShow }) => isShow ? 'block' : 'none'};
+  position: absolute;
+  right: 10px;
+  top: 11px;
+  color: #999;
+  cursor: pointer;
+`
 const Header:React.FC = () => {
+  const searchRef = useRef<null | HTMLInputElement>(null);
   const [searchKeyword, setSearchKeyword] = useState<string>('');
 
   const pathname = window.location.pathname;
@@ -157,9 +175,12 @@ const Header:React.FC = () => {
   const handleKeyword = (e: React.ChangeEvent<HTMLInputElement>):void => {
     setSearchKeyword(e.target.value);
   }
+  const resetKeyword = () => {
+    setSearchKeyword('');
+    searchRef.current!.focus();
+  }
 
   const { data:searchResult, isLoading, isError } = useMovieSearch(searchKeyword);
-  console.log(searchResult?.data.results);
 
   return (
     <Base>
@@ -190,14 +211,22 @@ const Header:React.FC = () => {
                   <SearchForm>
                     <SearchLabel>
                       <AiOutlineSearch style={{color: 'gray'}} />
-                      <SearchInput placeholder='콘텐츠, 인물, 컬렉션, 유저를 검색해보세요.' onChange={handleKeyword} />
+                      <SearchInput placeholder='콘텐츠, 인물, 컬렉션, 유저를 검색해보세요.' onChange={handleKeyword} value={searchKeyword} ref={searchRef} />
                     </SearchLabel>
                   </SearchForm>
                 </SearchFormWrapper>
+                <ResetIconWrapper isShow={searchKeyword.length > 0} onClick={resetKeyword}>
+                  <AiFillCloseCircle />
+                </ResetIconWrapper>
               </SearchContainer> 
 
               <SearchResultWrapper>
                 <SearchResultList>
+                  {
+                    searchKeyword ? (
+                      <SearchResultCaption>연관검색어</SearchResultCaption>
+                    ) : (null)
+                  }
                   {
                     searchResult?.data.results.map((item) => (
                       <Link key={item.id} href={`/movie/${item.id}`}>
