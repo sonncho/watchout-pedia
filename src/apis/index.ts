@@ -11,14 +11,10 @@ const axiosInstance = axios.create({
 const onRequest = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
   const { method, url } = config;
   if (method === 'get') {
-    
-    console.log('method', method);
-    console.log('url', url);
-    console.log(String(url)?.indexOf('images') > -1 ? 'images있음' : 'images없음')
-
+    const isVideo = String(url)?.indexOf('videos') > -1
     config.params = {
       ...config.params,
-      _t: Date.now(),
+      language: isVideo ? 'en-US' : 'ko-KR',
     }
   }
   config.timeout = 15000;

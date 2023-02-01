@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import styled from '@emotion/styled/macro';
 import { AiFillCloseCircle, AiOutlineSearch } from 'react-icons/ai';
 import useMovieSearch from '../../features/movie/useMovieSearch';
+
 const Base = styled.header`
   position: fixed;
   top: 0;

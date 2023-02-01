@@ -1,11 +1,12 @@
-import { ListResponse, MovieDetail } from './../../../types/index';
-import {useQuery} from 'react-query';
+import { useQuery } from 'react-query';
+import { AxiosError, AxiosResponse } from 'axios';
+
 import { detailApi } from '../../apis/movieApi';
-import { AxiosResponse, AxiosError } from 'axios';
+import { MovieDetail } from '../../../types';
 
 const useMovieDetail = (id: string) => {
   const queryFn = () => detailApi(id);
-  const { isLoading, isError, data } = useQuery<AxiosResponse<MovieDetail>, AxiosError>(['movieDetail', id], queryFn, { enabled: Boolean(id)})
+  const { isLoading, isError, data } = useQuery<AxiosResponse<MovieDetail>, AxiosError>(['movieDetail', id], queryFn);
 
   return {
     isLoading,

@@ -1,10 +1,16 @@
 import React, { useMemo } from 'react';
-import styled from '@emotion/styled/macro';
 import { useParams } from 'react-router-dom';
+import styled from '@emotion/styled/macro';
 import useMovieDetail from '../features/movie/useMovieDetail';
+
 import { FiPlus, FiMoreHorizontal } from 'react-icons/fi';
-import { MdEdit } from 'react-icons/md';
-import { AiFillEye } from 'react-icons/ai';
+import { MdEdit, MdStar } from 'react-icons/md';
+import { AiFillEye } from 'react-icons/ai'; 
+import { Rating } from '@mui/material';
+import DefaultInfo from '../features/movie/detail/DefaultInfo';
+import Similar from '../features/movie/detail/Similar';
+import Gallery from '../features/movie/detail/Gallery';
+import Video from '../features/movie/detail/Video';
 
 const Base = styled.div`
   position: relative;
@@ -156,7 +162,13 @@ const Divider = styled.div`
   background: #ededed;
   float: left;
 `;
-
+const DividerLine =styled.div`
+  padding: 0 12px;
+  box-sizing: border-box;
+  margin: 0 12px;
+  border-bottom: 1px solid #ededed;
+  
+`
 const ActionButtonContainer = styled.div`
   width: 461px;
   padding: 0 30px;
@@ -190,9 +202,34 @@ const BottomInfo = styled.div`
   padding: 28px 0 48px;
   max-width: 960px;
   margin: 0 auto;
+  &::after {
+    display: block;
+    content: '';
+    clear: both;
+  }
 `;
 
 const ContentSectionContainer = styled.div`
+  @media (min-width: 1023px) {
+    &:first-of-type {
+      float: left;
+      width: 620px;
+    }
+    &:last-child {
+      float: right;
+      width: 318px;
+    }
+  }
+  @media (max-width: 719px) {
+    &:first-of-type {
+      float: left;
+      width: 100%;
+    }
+    &:last-child {
+      float: left;
+      width: 100%;
+    }
+  }
   border-right: 1px solid;
   border-left: 1px solid;
   border-top: 1px solid;
@@ -201,34 +238,36 @@ const ContentSectionContainer = styled.div`
   background: #fff;
   border-color: #e3e3e3;
 `;
-
+const StyledRating = styled(Rating)({
+  '& .MuiRating-iconFilled': {
+    color: '#FCD86A',
+  },
+});
 
 const MovieDetail = () => {
   const { id } = useParams() as { id: string };
-  const { data:detailResponse, isLoading } = useMovieDetail(id);
-  console.dir(detailResponse);
+  const { data, isLoading } = useMovieDetail(id ?? '');
+  console.dir(data);
 
   const year = useMemo(() => {
-    return detailResponse?.release_date.split('-')[0] || ''
-  }, [detailResponse])
+    return data?.release_date.split('-')[0] || ''
+  }, [data])
 
   const genres = useMemo(() => {
-    return detailResponse?.genres.map((genre) => genre.name).join('/') || ''
-  }, [detailResponse])
+    return data?.genres.map((genre) => genre.name).join('/') || ''
+  }, [data])
 
   return (
     <Base>
       <>
         {
-          isLoading ? (
-            <div>Loading...</div>
-          ) : (
+          isLoading || !data ? (<div>Loading...</div>) : (
             <>
               <TopInfo>
                 <PosterContainer>
                   <Backdrop>
                     <LeftBlur />
-                    <BackdropImage imageUrl={`${process.env.REACT_APP_IMAGE_ORIGINAL}/${detailResponse?.backdrop_path}`}>
+                    <BackdropImage imageUrl={`${process.env.REACT_APP_IMAGE_ORIGINAL}/${data?.backdrop_path}`}>
                       <LeftGradient />
                       <RightGradient />
                     </BackdropImage>
@@ -239,16 +278,22 @@ const MovieDetail = () => {
                 <Main>
                   <Container>
                     <PosterWrapper>
-                      <Poster src={`${process.env.REACT_APP_IMAGE_PREFIX}/${detailResponse?.poster_path}`} />
+                      <Poster src={`${process.env.REACT_APP_IMAGE_PREFIX}/${data?.poster_path}`} />
                     </PosterWrapper>
                     <ContentWrapper>
-                      <Title>{detailResponse?.title}</Title>
+                      <Title>{data?.title}</Title>
                       <Keyword>{year} ・ {genres}</Keyword>
-                      <AverageRate>평균 ★{detailResponse?.vote_average} ({detailResponse?.vote_count}명)</AverageRate>
+                      <AverageRate>평균 ★{data?.vote_average} ({data?.vote_count}명)</AverageRate>
                       <Actions>
                         <StarRate>
                           <StarRateText>평가하기</StarRateText>
-                          <RatingWrapper></RatingWrapper>
+                          <RatingWrapper>
+                            <StyledRating
+                              precision={0.5}
+                              size="large"
+                              emptyIcon={<MdStar style={{color: '#EEEEEE'}} />}
+                            />
+                          </RatingWrapper>
                         </StarRate>
                         <Divider />
                         <ActionButtonContainer>
@@ -261,11 +306,23 @@ const MovieDetail = () => {
                     </ContentWrapper>
                   </Container>
                 </Main>
-              </TopInfo>
+              </TopInfo>  
               <BottomInfo>
                 <ContentSectionContainer>
-                  {/* <DefalutInfo />
-                  <Similar /> */}
+                  <DefaultInfo
+                    title={data.title}
+                    original_title={data.original_title}
+                    year={year}
+                    genres={genres}
+                    runtime={data.runtime}
+                    overview={data.overview}
+                  />
+                  <Similar id={`${data.id}`} />
+                </ContentSectionContainer>
+                <ContentSectionContainer>
+                  <Gallery id={`${data.id}`} />
+                  <DividerLine />
+                  <Video id={data.id} />
                 </ContentSectionContainer>
               </BottomInfo>
             </>
