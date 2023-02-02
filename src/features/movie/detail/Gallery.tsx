@@ -59,6 +59,9 @@ const ArrowButton = styled.button<{ pos?: 'left' | 'right' }>`
   &:before {
     content: initial;
   }
+  &:active, &:focus, &:hover {
+    background-color: #fff;
+  }
   > svg {
     position: absolute;
     top: 50%;

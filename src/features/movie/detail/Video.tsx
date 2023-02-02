@@ -1,8 +1,11 @@
 import React from 'react'
 import styled from '@emotion/styled';
+import {css} from '@emotion/react';
 import useVideo from './useVideo';
 import Slider from '../../../components/Slider';
 import { BsPlayCircle } from 'react-icons/bs';
+import { MdArrowForwardIos, MdArrowBackIos } from 'react-icons/md';
+
 
 const Base = styled.div`
   padding: 12px;
@@ -32,7 +35,7 @@ const ThumbnailWrapper = styled.div`
     background: rgb(248, 248, 248);
     box-sizing: border-box;
     border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 3px;
+    border-radius: 4px;
     position: relative;
     padding-bottom: 66.4615%;
 `
@@ -46,6 +49,14 @@ const Thumbnail = styled.span<{ url: string }>`
   background-repeat: no-repeat;
   opacity: 1;
   transition: all 300ms ease 0s;
+  &::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: rgba(0,0,0,.4);
+  }
 `;
 const IconWrapper = styled.div`
   position: absolute;
@@ -56,14 +67,40 @@ const IconWrapper = styled.div`
   font-size: 30px;
 `;
 const VideoTitle = styled.h4`
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 400;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  line-height: 20px;
-  padding: 4px
-`
+  line-height: 24px;
+  padding: 4px;
+`;
+const ArrowButton = styled.button<{ pos?: 'left' | 'right' }>`
+  padding: 16px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  z-index: 1;
+  top: 50%;
+  background-color: #fff;
+  ${({ pos }) => pos === 'left'
+    ? css`left: 0; transform: translate(-50%, -50%);`
+    : css`right: 0; transform: translate(50%, -50%);`};
+  &:before {
+    content: initial;
+  }
+  &:active, &:focus, &:hover {
+    background-color: #fff;
+  }
+  > svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    color: #222;
+  }
+`;
 interface Props {
   id: number;
 }
@@ -76,6 +113,16 @@ const sliderOptions = {
   slidesToScroll: 2.1,  // 스크롤에 보여지는 갯수
   swipe: true,        // touch swipe사용 여부
   draggable: false,    // 마우스 drag 사용 여부
+  prevArrow: (        // 왼쪽 화살표 아이콘 정의
+  <ArrowButton pos='left'>
+    <MdArrowBackIos />
+  </ArrowButton>
+  ),
+  nextArrow: (        // 오른쪽 화살표 아이콘 정의
+    <ArrowButton pos='right'>
+      <MdArrowForwardIos />
+    </ArrowButton>
+  )
 }
 const Video = ({id}:Props) => {
   const { data, isLoading, isError } = useVideo(id);

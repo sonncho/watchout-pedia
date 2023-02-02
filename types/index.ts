@@ -100,12 +100,14 @@ interface Network {
   name: string;
 }
 
-interface Season {
+export interface Season {
   id: number;
+  air_date: Date;
   episode_count: number;
+  name: string;
+  overview?: string;
   poster_path: string;
   season_number: number;
-  air_date: Date;
 }
 
 export interface TVDetail extends TV {
@@ -119,7 +121,7 @@ export interface TVDetail extends TV {
   number_of_episodes: number;
   number_of_seasons: number;
   production_companies: Company[];
-  seasons: Season[];
+  seasons?: Season[];
   status: string;
   type: string;
   last_air_date: Date;

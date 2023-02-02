@@ -1,5 +1,5 @@
 import { ListResponse, MovieDetail } from './../../../types/index';
-import { useQuery, useInfiniteQuery } from "react-query";
+import { useQuery } from "react-query";
 import { AxiosResponse, AxiosError } from "axios";
 import { similarApi } from "../../apis/movieApi";
 

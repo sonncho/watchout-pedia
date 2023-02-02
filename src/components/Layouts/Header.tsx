@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import styled from '@emotion/styled/macro';
 import { AiFillCloseCircle, AiOutlineSearch } from 'react-icons/ai';
 import useMovieSearch from '../../features/movie/useMovieSearch';
+import useTvSearch from '../../features/tv/useTvSearch';
 
 const Base = styled.header`
   position: fixed;
@@ -171,7 +172,7 @@ const Header:React.FC = () => {
   const [searchKeyword, setSearchKeyword] = useState<string>('');
 
   const pathname = window.location.pathname;
-  const isTv = pathname.indexOf('tv') > -1;
+  // const isTv = pathname.indexOf('tv') > -1;
 
   const handleKeyword = (e: React.ChangeEvent<HTMLInputElement>):void => {
     setSearchKeyword(e.target.value);
@@ -181,7 +182,7 @@ const Header:React.FC = () => {
     searchRef.current!.focus();
   }
 
-  const { data:searchResult, isLoading, isError } = useMovieSearch(searchKeyword);
+  const { data, isLoading, isError } = useMovieSearch(searchKeyword);
 
   return (
     <Base>
@@ -229,7 +230,7 @@ const Header:React.FC = () => {
                     ) : (null)
                   }
                   {
-                    searchResult?.data.results.map((item) => (
+                    data?.data.results.map((item) => (
                       <Link key={item.id} href={`/movie/${item.id}`}>
                         <SearchResultListItem>{item.title}</SearchResultListItem>
                       </Link>
